@@ -15,13 +15,6 @@ library BitBucketsLib {
         bytes32 bucketsMask; // bitmask for all used buckets
     }
 
-    /// ERRORS ///
-
-    /// @notice Thrown when the address is zero at insertion.
-    error AddressIsZero();
-    /// @notice Thrown when 0 value is inserted.
-    error ZeroValue();
-
     /// INTERNAL ///
 
     /// @notice Updates an account in the `_bitBuckets`.
@@ -37,21 +30,30 @@ library BitBucketsLib {
 
         if (formerValue == newValue) return;
 
-        if (newValue == 0) remove(_bitBuckets, formerMask, _id);
+        if (newValue == 0) _remove(_bitBuckets, formerMask, _id);
         else {
             bytes32 newMask = _newValue.computeMask();
-            if (formerValue == 0) insert(_bitBuckets, newMask, _id, newValue);
+            if (formerValue == 0) _insert(_bitBuckets, newMask, _id, newValue);
             else if (newMask == formerMask) formerBucket.changeValue(_id, newValue);
             else {
-                remove(_bitBuckets, formerMask, _id);
-                insert(_bitBuckets, newMask, _id, newValue);
+                _remove(_bitBuckets, formerMask, _id);
+                _insert(_bitBuckets, newMask, _id, newValue);
             }
         }
     }
 
+    function getValueOf(BitBuckets storage _bitBuckets, address _id)
+        internal
+        view
+        returns (uint256)
+    {
+        bytes32 formerMask = _bitBuckets.maskOf[_id];
+        return _bitBuckets.buckets[formerMask].getValueOf(_id);
+    }
+
     /// PRIVATE ///
 
-    function remove(
+    function _remove(
         BitBuckets storage _bitBuckets,
         bytes32 _formerMask,
         address _id
@@ -62,7 +64,7 @@ library BitBucketsLib {
         _bitBuckets.bucketsMask &= ~_formerMask;
     }
 
-    function insert(
+    function _insert(
         BitBuckets storage _bitBuckets,
         bytes32 _newMask,
         address _id,
