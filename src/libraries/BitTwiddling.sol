@@ -15,13 +15,13 @@ library BitTwiddling {
     }
 
     function nextBitMask(
-        bytes32 _bit,
-        uint256 _log,
-        bytes32 _fullMask
+        bytes32 bit,
+        uint256 log,
+        bytes32 fullMask
     ) internal pure returns (bytes32 nextBit) {
         assembly {
-            _bit := shl(8, signextend(_bit, _log))
-            nextBit := and(_bit, _fullMask)
+            bit := shl(8, signextend(bit, log))
+            nextBit := and(bit, fullMask)
             nextBit := and(nextBit, add(not(nextBit), 1))
             nextBit := or(nextBit, shl(1, nextBit))
             nextBit := or(nextBit, shl(2, nextBit))
@@ -30,13 +30,13 @@ library BitTwiddling {
     }
 
     function prevBitMask(
-        bytes32 _bit,
-        uint256 _log,
-        bytes32 _fullMask
+        bytes32 bit,
+        uint256 log,
+        bytes32 fullMask
     ) internal pure returns (bytes32 prevBit) {
         assembly {
-            _bit := shl(8, signextend(_bit, _log))
-            prevBit := and(not(_bit), _fullMask)
+            bit := shl(8, signextend(bit, log))
+            prevBit := and(not(bit), fullMask)
             prevBit := or(prevBit, shr(8, prevBit))
             prevBit := or(prevBit, shr(16, prevBit))
             prevBit := or(prevBit, shr(32, prevBit))
