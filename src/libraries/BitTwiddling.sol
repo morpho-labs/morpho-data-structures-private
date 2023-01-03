@@ -9,9 +9,9 @@ library BitTwiddling {
 
     /// INTERNAL FUNCTIONS ///
 
-    function computeMask(uint256 x) internal pure returns (uint256 u32log2, bytes32 y) {
-        u32log2 = (log2(x) / 8) * 8;
-        y = FIRST_MASK << u32log2;
+    function computeMask(uint256 x) internal pure returns (uint256 log256, bytes32 y) {
+        log256 = log2(x) / 8;
+        y = FIRST_MASK << log256;
     }
 
     function nextBitMask(
