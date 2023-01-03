@@ -7,6 +7,7 @@ import "./BucketLib.sol";
 
 library BitBucketsLib {
     using BitTwiddling for uint256;
+    using BitTwiddling for bytes32;
     using BucketLib for BucketLib.Bucket;
 
     struct BitBuckets {
@@ -32,7 +33,7 @@ library BitBucketsLib {
 
         if (newValue == 0) _remove(_bitBuckets, formerMask, _id);
         else {
-            bytes32 newMask = _newValue.computeMask();
+            (, bytes32 newMask) = _newValue.computeMask();
             if (formerValue == 0) _insert(_bitBuckets, newMask, _id, newValue);
             else if (newMask == formerMask) formerBucket.changeValue(_id, newValue);
             else {
@@ -49,6 +50,23 @@ library BitBucketsLib {
     {
         bytes32 formerMask = _bitBuckets.maskOf[_id];
         return _bitBuckets.buckets[formerMask].getValueOf(_id);
+    }
+
+    function getHead(BitBuckets storage _bitBuckets, uint96 _value)
+        internal
+        view
+        returns (BucketLib.Account memory)
+    {
+        (uint256 u32log2, bytes32 mask) = uint256(_value).computeMask();
+        bytes32 fullMask = _bitBuckets.bucketsMask;
+        bytes32 nextMask = mask.nextBitMask(u32log2, fullMask);
+
+        if (nextMask != 0) return _bitBuckets.buckets[nextMask].getHead();
+
+        bytes32 prevMask = mask.prevBitMask(u32log2, fullMask);
+
+        if (prevMask != 0) return _bitBuckets.buckets[prevMask].getHead();
+        else return BucketLib.Account(address(0), 0);
     }
 
     /// PRIVATE ///

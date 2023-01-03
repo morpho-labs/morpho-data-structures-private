@@ -12,6 +12,10 @@ library BucketLib {
         mapping(address => uint256) indexOf;
     }
 
+    function getHead(Bucket storage _bucket) internal view returns (Account memory) {
+        return _bucket.accounts[0];
+    }
+
     function getValueOf(Bucket storage _bucket, address _id) internal view returns (uint96) {
         uint256 index = _bucket.indexOf[_id];
         return _bucket.accounts[index].value;

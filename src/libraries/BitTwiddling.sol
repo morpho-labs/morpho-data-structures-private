@@ -9,9 +9,41 @@ library BitTwiddling {
 
     /// INTERNAL FUNCTIONS ///
 
-    function computeMask(uint256 x) internal pure returns (bytes32 y) {
-        uint256 log2Base = (log2(x) / 8) * 8;
-        return FIRST_MASK << log2Base;
+    function computeMask(uint256 x) internal pure returns (uint256 u32log2, bytes32 y) {
+        u32log2 = (log2(x) / 8) * 8;
+        y = FIRST_MASK << u32log2;
+    }
+
+    function nextBitMask(
+        bytes32 _bit,
+        uint256 _log,
+        bytes32 _fullMask
+    ) internal pure returns (bytes32 nextBit) {
+        assembly {
+            _bit := shl(8, signextend(_bit, _log))
+            nextBit := and(_bit, _fullMask)
+            nextBit := and(nextBit, add(not(nextBit), 1))
+            nextBit := or(nextBit, shl(1, nextBit))
+            nextBit := or(nextBit, shl(2, nextBit))
+            nextBit := or(nextBit, shl(4, nextBit))
+        }
+    }
+
+    function prevBitMask(
+        bytes32 _bit,
+        uint256 _log,
+        bytes32 _fullMask
+    ) internal pure returns (bytes32 prevBit) {
+        assembly {
+            _bit := shl(8, signextend(_bit, _log))
+            prevBit := and(not(_bit), _fullMask)
+            prevBit := or(prevBit, shr(8, prevBit))
+            prevBit := or(prevBit, shr(16, prevBit))
+            prevBit := or(prevBit, shr(32, prevBit))
+            prevBit := or(prevBit, shr(64, prevBit))
+            prevBit := or(prevBit, shr(128, prevBit))
+            prevBit := xor(prevBit, shr(8, prevBit))
+        }
     }
 
     /// @dev Returns the floor of log2(x) and returns 0 on input 0.
