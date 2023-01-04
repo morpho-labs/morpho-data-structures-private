@@ -17,7 +17,11 @@ library BucketLib {
     }
 
     function getValueOf(Bucket storage _bucket, address _id) internal view returns (uint96) {
-        return _bucket.accounts[_bucket.indexOf[_id]].value;
+        uint256 index = _bucket.indexOf[_id];
+        if (index >= _bucket.accounts.length) return 0;
+        Account memory account = _bucket.accounts[index];
+        if (account.id != _id) return 0;
+        else return account.value;
     }
 
     function getLength(Bucket storage _bucket) internal view returns (uint256) {

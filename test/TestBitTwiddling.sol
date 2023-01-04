@@ -7,8 +7,10 @@ import "./helpers/ConcreteBitTwiddling.sol";
 
 contract TestBitTwiddling is Test {
     ConcreteBitTwiddling public bitTwiddling = new ConcreteBitTwiddling();
+
     bytes32 internal constant FIRST_MASK =
         0x00000000000000000000000000000000000000000000000000000000000000ff;
+
     bytes32 internal constant ONE =
         0x0000000000000000000000000000000000000000000000000000000000000001;
 

@@ -4,8 +4,6 @@ pragma solidity ^0.8.0;
 import "src/libraries/BitTwiddling.sol";
 
 contract ConcreteBitTwiddling {
-    constructor() {}
-
     function firstMask() public pure returns (bytes32) {
         return BitTwiddling.FIRST_MASK;
     }

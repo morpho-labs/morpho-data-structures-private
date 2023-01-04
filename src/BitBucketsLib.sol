@@ -5,6 +5,8 @@ import "@openzeppelin/contracts/utils/math/SafeCast.sol";
 import "./libraries/BitTwiddling.sol";
 import "./BucketLib.sol";
 
+import "forge-std/console.sol";
+
 library BitBucketsLib {
     using BitTwiddling for uint256;
     using BitTwiddling for bytes32;
@@ -16,15 +18,21 @@ library BitBucketsLib {
         bytes32 bucketsMask; // bitmask for all used buckets
     }
 
+    /// ERRORS ///
+
+    /// @notice Thrown when the address is zero at insertion.
+    error AddressIsZero();
+
     /// INTERNAL ///
 
     /// @notice Updates an account in the `_bitBuckets`.
-    /// @dev Do not use function with `_id` being the 0 address.
     function update(
         BitBuckets storage _bitBuckets,
         address _id,
         uint256 _newValue
     ) internal {
+        if (_id == address(0)) revert AddressIsZero();
+
         bytes32 formerMask = _bitBuckets.maskOf[_id];
         BucketLib.Bucket storage formerBucket = _bitBuckets.buckets[formerMask];
         uint96 formerValue = formerBucket.getValueOf(_id);
@@ -56,18 +64,18 @@ library BitBucketsLib {
     function getHead(BitBuckets storage _bitBuckets, uint96 _value)
         internal
         view
-        returns (BucketLib.Account memory)
+        returns (address)
     {
         (uint256 byte_offset, bytes32 mask) = uint256(_value).computeMask();
         bytes32 fullMask = _bitBuckets.bucketsMask;
         bytes32 nextMask = mask.nextBitMask(byte_offset, fullMask);
 
-        if (nextMask != 0) return _bitBuckets.buckets[nextMask].getHead();
+        if (nextMask != 0) return _bitBuckets.buckets[nextMask].getHead().id;
 
         bytes32 prevMask = mask.prevBitMask(byte_offset, fullMask);
 
-        if (prevMask != 0) return _bitBuckets.buckets[prevMask].getHead();
-        else return BucketLib.Account(address(0), 0);
+        if (prevMask != 0) return _bitBuckets.buckets[prevMask].getHead().id;
+        else return address(0);
     }
 
     /// PRIVATE ///
