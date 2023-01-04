@@ -57,13 +57,13 @@ library BitBucketsLib {
         view
         returns (BucketLib.Account memory)
     {
-        (uint256 log256, bytes32 mask) = uint256(_value).computeMask();
+        (uint256 byte_offset, bytes32 mask) = uint256(_value).computeMask();
         bytes32 fullMask = _bitBuckets.bucketsMask;
-        bytes32 nextMask = mask.nextBitMask(log256, fullMask);
+        bytes32 nextMask = mask.nextBitMask(byte_offset, fullMask);
 
         if (nextMask != 0) return _bitBuckets.buckets[nextMask].getHead();
 
-        bytes32 prevMask = mask.prevBitMask(log256, fullMask);
+        bytes32 prevMask = mask.prevBitMask(byte_offset, fullMask);
 
         if (prevMask != 0) return _bitBuckets.buckets[prevMask].getHead();
         else return BucketLib.Account(address(0), 0);

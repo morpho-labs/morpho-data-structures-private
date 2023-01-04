@@ -9,19 +9,19 @@ library BitTwiddling {
 
     /// INTERNAL FUNCTIONS ///
 
-    function computeMask(uint256 x) internal pure returns (uint256 log256, bytes32 y) {
-        log256 = log2(x) / 8;
-        y = FIRST_MASK << log256;
+    function computeMask(uint256 x) internal pure returns (uint256 byte_offset, bytes32 y) {
+        byte_offset = log256(x); // IMPORTANT: we could also use `min(31, log2(x))` or any function returning an integer strictly smaller than 32
+        y = FIRST_MASK << (byte_offset * 8);
     }
 
     function nextBitMask(
-        bytes32 bit,
-        uint256 log,
+        bytes32 bitMask,
+        uint256 byte_offset,
         bytes32 fullMask
     ) internal pure returns (bytes32 nextBit) {
         assembly {
-            bit := shl(8, signextend(bit, log))
-            nextBit := and(bit, fullMask)
+            bitMask := shl(8, signextend(byte_offset, bitMask))
+            nextBit := and(bitMask, fullMask)
             nextBit := and(nextBit, add(not(nextBit), 1))
             nextBit := or(nextBit, shl(1, nextBit))
             nextBit := or(nextBit, shl(2, nextBit))
@@ -30,13 +30,13 @@ library BitTwiddling {
     }
 
     function prevBitMask(
-        bytes32 bit,
-        uint256 log,
+        bytes32 bitMask,
+        uint256 byte_offset,
         bytes32 fullMask
     ) internal pure returns (bytes32 prevBit) {
         assembly {
-            bit := shl(8, signextend(bit, log))
-            prevBit := and(not(bit), fullMask)
+            bitMask := shl(8, signextend(byte_offset, bitMask))
+            prevBit := and(not(bitMask), fullMask)
             prevBit := or(prevBit, shr(8, prevBit))
             prevBit := or(prevBit, shr(16, prevBit))
             prevBit := or(prevBit, shr(32, prevBit))
@@ -44,6 +44,11 @@ library BitTwiddling {
             prevBit := or(prevBit, shr(128, prevBit))
             prevBit := xor(prevBit, shr(8, prevBit))
         }
+    }
+
+    /// @dev Returns the floor of log256(x) and returns 0 on input 0.
+    function log256(uint256 x) internal pure returns (uint256) {
+        return log2(x) / 8;
     }
 
     /// @dev Returns the floor of log2(x) and returns 0 on input 0.
@@ -62,7 +67,7 @@ library BitTwiddling {
             // Take only the highest bit of x
             x := xor(x, shr(1, x))
 
-            // Hash table associating the first 256 powers of 2 to their log
+            // Hash table associating the first 256 powers of 2 to their byte_offset
             // Let x be a power of 2, its hash is obtained by taking the first byte of x * deBruijnSeq
             let m := mload(0x40)
             mstore(m, 0x0001020903110a19042112290b311a3905412245134d2a550c5d32651b6d3a75)
