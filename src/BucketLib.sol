@@ -17,8 +17,11 @@ library BucketLib {
     }
 
     function getValueOf(Bucket storage _bucket, address _id) internal view returns (uint96) {
-        uint256 index = _bucket.indexOf[_id];
-        return _bucket.accounts[index].value;
+        return _bucket.accounts[_bucket.indexOf[_id]].value;
+    }
+
+    function getLength(Bucket storage _bucket) internal view returns (uint256) {
+        return _bucket.accounts.length;
     }
 
     function changeValue(
@@ -26,8 +29,7 @@ library BucketLib {
         address _id,
         uint96 _newValue
     ) internal {
-        uint256 index = _bucket.indexOf[_id];
-        _bucket.accounts[index].value = _newValue;
+        _bucket.accounts[_bucket.indexOf[_id]].value = _newValue;
     }
 
     function remove(Bucket storage _bucket, address _id) internal {

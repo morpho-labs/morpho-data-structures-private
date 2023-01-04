@@ -79,7 +79,7 @@ library BitBucketsLib {
         BucketLib.Bucket storage formerBucket = _bitBuckets.buckets[_formerMask];
         formerBucket.remove(_id);
         delete _bitBuckets.maskOf[_id];
-        _bitBuckets.bucketsMask &= ~_formerMask;
+        if (formerBucket.getLength() == 0) _bitBuckets.bucketsMask &= ~_formerMask;
     }
 
     function _insert(
