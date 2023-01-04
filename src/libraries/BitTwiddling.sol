@@ -9,6 +9,8 @@ library BitTwiddling {
 
     /// INTERNAL FUNCTIONS ///
 
+    /// @notice Computes the mask and offset in bytes of the mask.
+    /// @dev Masks are working on bytes (not bits), a byte toggled on is indicated by Oxff and a byte toggled off is indicated by 0x00
     function computeMask(uint256 x) internal pure returns (uint256 byte_offset, bytes32 y) {
         byte_offset = log256(x); // IMPORTANT: we could also use `min(31, log2(x))` or any function returning an integer strictly smaller than 32
         y = FIRST_MASK << (byte_offset * 8);
