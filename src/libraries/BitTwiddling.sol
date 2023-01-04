@@ -16,6 +16,11 @@ library BitTwiddling {
         y = FIRST_MASK << (byte_offset * 8);
     }
 
+    /// @notice Returns the mask just above `bitMask` in `fullMask`. Returns 0 if there is none.
+    /// @dev Masks are working on bytes (not bits), a byte toggled on is indicated by Oxff and a byte toggled off is indicated by 0x00
+    /// @param bitMask the mask in byte from which to search for the next mask.
+    /// @param byte_offset the offset in bytes representing `bitMask`
+    /// @param fullMask the mask in byte on which to search the next mask. `fullMask` may have multiple bytes on.
     function nextBitMask(
         bytes32 bitMask,
         uint256 byte_offset,
@@ -31,6 +36,11 @@ library BitTwiddling {
         }
     }
 
+    /// @notice Returns the mask just below `bitMask` in `fullMask`. Returns 0 if there is none.
+    /// @dev Masks are working on bytes (not bits), a byte toggled on is indicated by Oxff and a byte toggled off is indicated by 0x00
+    /// @param bitMask the mask in byte from which to search for the previous mask.
+    /// @param byte_offset the offset in bytes representing `bitMask`
+    /// @param fullMask the mask in byte on which to search the previous mask. `fullMask` may have multiple bytes on.
     function prevBitMask(
         bytes32 bitMask,
         uint256 byte_offset,
