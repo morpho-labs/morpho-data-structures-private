@@ -19,6 +19,7 @@ library BitBucketsLib {
     /// INTERNAL ///
 
     /// @notice Updates an account in the `_bitBuckets`.
+    /// @dev Do not use function with `_id` being the 0 address.
     function update(
         BitBuckets storage _bitBuckets,
         address _id,
