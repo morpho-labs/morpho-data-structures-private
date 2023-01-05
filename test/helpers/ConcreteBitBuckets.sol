@@ -5,6 +5,7 @@ import "src/BucketLib.sol";
 import "src/BitBucketsLib.sol";
 
 contract ConcreteBitBuckets {
+    using BucketLib for BucketLib.Bucket;
     using BitBucketsLib for BitBucketsLib.BitBuckets;
 
     BitBucketsLib.BitBuckets internal bitBuckets;
@@ -27,5 +28,21 @@ contract ConcreteBitBuckets {
 
     function getBucketsMask() public view returns (bytes32) {
         return bitBuckets.bucketsMask;
+    }
+
+    function verifyStructure() public view returns (bool) {
+        for (uint256 i; i < 32; i++) {
+            uint256 lowerValue = 2**(8 * i);
+            uint256 higherValue;
+            if (i == 31) higherValue = type(uint256).max;
+            else higherValue = 2**(8 * (i + 1)) - 1;
+            bytes32 mask = BitTwiddling.FIRST_MASK << (8 * i);
+            BucketLib.Bucket storage bucket = bitBuckets.buckets[mask];
+            for (uint256 j; j < bucket.getLength(); j++) {
+                uint256 value = bucket.accounts[j].value;
+                if (value < lowerValue || value > higherValue) return false;
+            }
+        }
+        return true;
     }
 }

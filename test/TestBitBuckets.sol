@@ -1,18 +1,16 @@
 // SPDX-License-Identifier: GNU AGPLv3
 pragma solidity ^0.8.0;
 
-import "forge-std/Test.sol";
-import "./helpers/ConcreteBitBuckets.sol";
+import "./helpers/TestRandomBuckets.sol";
 
-contract TestBitBuckets is Test {
-    ConcreteBitBuckets public bitBuckets = new ConcreteBitBuckets();
-
+contract TestBitBuckets is TestRandomBuckets {
     uint256 public accountsLength = 50;
     address[] public accounts;
     address public constant ADDR_ZERO = address(0);
     bytes32 public firstMask;
 
     function setUp() public {
+        bitBuckets = new ConcreteBitBuckets();
         accounts = new address[](accountsLength);
         accounts[0] = address(this);
         for (uint256 i = 1; i < accountsLength; i++) {
