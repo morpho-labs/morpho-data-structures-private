@@ -29,9 +29,13 @@ library BitTwiddling {
         bytes32 fullMask
     ) internal pure returns (bytes32 nextBit) {
         assembly {
+            // Get the mask to select all the bits strictly higher than bitMask.
             bitMask := shl(8, signextend(byte_offset, bitMask))
+            // Select all the bits in fullMask higher than bitMask.
             nextBit := and(bitMask, fullMask)
+            // Select the lower bit.
             nextBit := and(nextBit, add(not(nextBit), 1))
+            // Set all the bits of the byte containing the bit set.
             nextBit := or(nextBit, shl(1, nextBit))
             nextBit := or(nextBit, shl(2, nextBit))
             nextBit := or(nextBit, shl(4, nextBit))
@@ -49,13 +53,17 @@ library BitTwiddling {
         bytes32 fullMask
     ) internal pure returns (bytes32 prevBit) {
         assembly {
+            // Get the mask to select all the bits strictly higher than bitMask
             bitMask := shl(8, signextend(byte_offset, bitMask))
+            // Select all the bits in fullMask smaller or equal to bitMask
             prevBit := and(not(bitMask), fullMask)
+            // Set all lower bits
             prevBit := or(prevBit, shr(8, prevBit))
             prevBit := or(prevBit, shr(16, prevBit))
             prevBit := or(prevBit, shr(32, prevBit))
             prevBit := or(prevBit, shr(64, prevBit))
             prevBit := or(prevBit, shr(128, prevBit))
+            // Select only the higher 8 bits
             prevBit := xor(prevBit, shr(8, prevBit))
         }
     }
