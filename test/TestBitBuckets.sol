@@ -9,7 +9,8 @@ contract TestBitBuckets is Test {
 
     uint256 public accountsLength = 50;
     address[] public accounts;
-    address public ADDR_ZERO = address(0);
+    address public constant ADDR_ZERO = address(0);
+    bytes32 public firstMask;
 
     function setUp() public {
         accounts = new address[](accountsLength);
@@ -17,6 +18,7 @@ contract TestBitBuckets is Test {
         for (uint256 i = 1; i < accountsLength; i++) {
             accounts[i] = address(uint160(accounts[i - 1]) + 1);
         }
+        firstMask = BitTwiddling.FIRST_MASK;
     }
 
     function testInsertOneSingleAccount() public {
@@ -25,7 +27,7 @@ contract TestBitBuckets is Test {
         assertEq(bitBuckets.getValueOf(accounts[0]), 1);
         assertEq(bitBuckets.getHead(0), accounts[0]);
         // assertEq(bitBuckets.getMaxIndex(), 0);
-        // assertEq(bitBuckets.getBucketOf(accounts[0]), 0);
+        assertEq(bitBuckets.maskOf(accounts[0]), firstMask);
     }
 
     function testUpdatingFromZeroToZeroShouldNotInsert() public {
@@ -45,7 +47,7 @@ contract TestBitBuckets is Test {
         assertEq(bitBuckets.getValueOf(accounts[0]), 0);
         assertEq(bitBuckets.getHead(0), address(0));
         // assertEq(bitBuckets.getMaxIndex(), 0);
-        // assertEq(bitBuckets.getBucketOf(accounts[0]), 0);
+        assertEq(bitBuckets.maskOf(accounts[0]), 0);
     }
 
     function testShouldInsertTwoAccounts() public {

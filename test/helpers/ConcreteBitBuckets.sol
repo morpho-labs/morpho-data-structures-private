@@ -20,4 +20,12 @@ contract ConcreteBitBuckets {
     function getHead(uint96 _value) public view returns (address) {
         return bitBuckets.getHead(_value);
     }
+
+    function maskOf(address _id) public view returns (bytes32) {
+        return bitBuckets.maskOf[_id];
+    }
+
+    function bucketsMask() public view returns (bytes32) {
+        return bitBuckets.bucketsMask;
+    }
 }
