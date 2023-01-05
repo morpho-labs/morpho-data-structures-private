@@ -80,13 +80,13 @@ library BitBucketsLib {
         view
         returns (address)
     {
-        (uint256 byte_offset, bytes32 mask) = uint256(_value).computeMask();
+        (uint256 byteOffset, bytes32 mask) = uint256(_value).computeMask();
         bytes32 fullMask = _bitBuckets.bucketsMask;
-        bytes32 nextMask = mask.nextBitMask(byte_offset, fullMask);
+        bytes32 nextMask = mask.nextBitMask(byteOffset, fullMask);
 
         if (nextMask != 0) return _bitBuckets.buckets[nextMask].getHead().id;
 
-        bytes32 prevMask = mask.prevBitMask(byte_offset, fullMask);
+        bytes32 prevMask = mask.prevBitMask(byteOffset, fullMask);
 
         if (prevMask != 0) return _bitBuckets.buckets[prevMask].getHead().id;
         else return address(0);

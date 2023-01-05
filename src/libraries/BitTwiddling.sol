@@ -13,24 +13,24 @@ library BitTwiddling {
 
     /// @notice Computes the mask and offset in bytes of the mask.
     /// @dev Masks are working on bytes (not bits), a byte toggled on is indicated by Oxff and a byte toggled off is indicated by 0x00.
-    function computeMask(uint256 x) internal pure returns (uint256 byte_offset, bytes32 y) {
-        byte_offset = _log256(x); // IMPORTANT: we could also use `min(31, log2(x))` or any function returning an integer strictly smaller than 32.
-        y = FIRST_MASK << (byte_offset * 8);
+    function computeMask(uint256 x) internal pure returns (uint256 byteOffset, bytes32 y) {
+        byteOffset = _log256(x); // IMPORTANT: we could also use `min(31, log2(x))` or any function returning an integer strictly smaller than 32.
+        y = FIRST_MASK << (byteOffset * 8);
     }
 
     /// @notice Returns the mask just above `bitMask` in `fullMask`. Returns 0 if there is none.
     /// @dev Masks are working on bytes (not bits), a byte toggled on is indicated by Oxff and a byte toggled off is indicated by 0x00.
     /// @param bitMask the mask in byte from which to search for the next mask.
-    /// @param byte_offset the offset in bytes representing `bitMask`.
+    /// @param byteOffset the offset in bytes representing `bitMask`.
     /// @param fullMask the mask in byte on which to search the next mask. `fullMask` may have multiple bytes on.
     function nextBitMask(
         bytes32 bitMask,
-        uint256 byte_offset,
+        uint256 byteOffset,
         bytes32 fullMask
     ) internal pure returns (bytes32 nextBit) {
         assembly {
             // Get the mask to select all the bits strictly higher than bitMask.
-            bitMask := shl(8, signextend(byte_offset, bitMask))
+            bitMask := shl(8, signextend(byteOffset, bitMask))
             // Select all the bits in fullMask higher than bitMask.
             nextBit := and(bitMask, fullMask)
             // Select the lower bit.
@@ -45,16 +45,16 @@ library BitTwiddling {
     /// @notice Returns the mask just below `bitMask` in `fullMask`. Returns 0 if there is none.
     /// @dev Masks are working on bytes (not bits), a byte toggled on is indicated by Oxff and a byte toggled off is indicated by 0x00.
     /// @param bitMask the mask in byte from which to search for the previous mask.
-    /// @param byte_offset the offset in bytes representing `bitMask`.
+    /// @param byteOffset the offset in bytes representing `bitMask`.
     /// @param fullMask the mask in byte on which to search the previous mask. `fullMask` may have multiple bytes on.
     function prevBitMask(
         bytes32 bitMask,
-        uint256 byte_offset,
+        uint256 byteOffset,
         bytes32 fullMask
     ) internal pure returns (bytes32 prevBit) {
         assembly {
             // Get the mask to select all the bits strictly higher than bitMask.
-            bitMask := shl(8, signextend(byte_offset, bitMask))
+            bitMask := shl(8, signextend(byteOffset, bitMask))
             // Select all the bits in fullMask smaller or equal to bitMask.
             prevBit := and(not(bitMask), fullMask)
             // Set all lower bits.
