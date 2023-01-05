@@ -7,14 +7,14 @@ import "./helpers/ConcreteBitBuckets.sol";
 contract TestBitBuckets is Test {
     ConcreteBitBuckets public bitBuckets = new ConcreteBitBuckets();
 
-    uint256 public NDS = 50;
+    uint256 public accountsLength = 50;
     address[] public accounts;
     address public ADDR_ZERO = address(0);
 
     function setUp() public {
-        accounts = new address[](NDS);
+        accounts = new address[](accountsLength);
         accounts[0] = address(this);
-        for (uint256 i = 1; i < NDS; i++) {
+        for (uint256 i = 1; i < accountsLength; i++) {
             accounts[i] = address(uint160(accounts[i - 1]) + 1);
         }
     }

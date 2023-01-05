@@ -27,12 +27,4 @@ contract ConcreteBitTwiddling {
     ) public pure returns (bytes32 prevBit) {
         return BitTwiddling.prevBitMask(bitMask, byte_offset, fullMask);
     }
-
-    function log256(uint256 x) public pure returns (uint256) {
-        return BitTwiddling.log256(x);
-    }
-
-    function log2(uint256 x) public pure returns (uint256 y) {
-        return BitTwiddling.log2(x);
-    }
 }
