@@ -49,11 +49,11 @@ contract TestBitBuckets is Test {
     }
 
     function testShouldInsertTwoAccounts() public {
-        bitBuckets.update(accounts[0], 16);
-        bitBuckets.update(accounts[1], 4);
+        bitBuckets.update(accounts[0], 2**16);
+        bitBuckets.update(accounts[1], 2**8);
 
-        assertEq(bitBuckets.getHead(16), accounts[0]);
-        assertEq(bitBuckets.getHead(4), accounts[1]);
+        assertEq(bitBuckets.getHead(2**8), accounts[0], "fetch big account");
+        assertEq(bitBuckets.getHead(2**4), accounts[1], "fetch small account");
         // assertEq(bitBuckets.getMaxIndex(), 2);
     }
 
@@ -84,7 +84,7 @@ contract TestBitBuckets is Test {
     //     assertEq(bitBuckets.getMaxIndex(), 0);
     //     bitBuckets.update(accounts[2], 4);
     //     assertEq(bitBuckets.getMaxIndex(), 1);
-    //     bitBuckets.update(accounts[3], 16);
+    //     bitBuckets.update(accounts[3], 1000);
     //     assertEq(bitBuckets.getMaxIndex(), 2);
     //     bitBuckets.update(accounts[3], 0);
     //     assertEq(bitBuckets.getMaxIndex(), 1);
@@ -98,9 +98,9 @@ contract TestBitBuckets is Test {
         assertEq(bitBuckets.getHead(0), address(0));
         assertEq(bitBuckets.getHead(1000), address(0));
 
-        bitBuckets.update(accounts[0], 16);
+        bitBuckets.update(accounts[0], 1000);
         assertEq(bitBuckets.getHead(1), accounts[0]);
-        assertEq(bitBuckets.getHead(16), accounts[0]);
+        assertEq(bitBuckets.getHead(1000), accounts[0]);
         assertEq(bitBuckets.getHead(32), accounts[0]);
     }
 }
