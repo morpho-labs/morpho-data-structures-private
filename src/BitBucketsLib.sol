@@ -5,8 +5,6 @@ import "@openzeppelin/contracts/utils/math/SafeCast.sol";
 import "./libraries/BitTwiddling.sol";
 import "./BucketLib.sol";
 
-import "forge-std/console.sol";
-
 library BitBucketsLib {
     using BitTwiddling for uint256;
     using BitTwiddling for bytes32;

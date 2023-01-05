@@ -42,7 +42,7 @@ contract TestBitBuckets is Test {
         bitBuckets.update(accounts[0], 1);
         bitBuckets.update(accounts[0], 0);
 
-        // assertEq(bitBuckets.getValueOf(accounts[0]), 0);
+        assertEq(bitBuckets.getValueOf(accounts[0]), 0);
         assertEq(bitBuckets.getHead(0), address(0));
         // assertEq(bitBuckets.getMaxIndex(), 0);
         // assertEq(bitBuckets.getBucketOf(accounts[0]), 0);
