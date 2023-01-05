@@ -26,8 +26,8 @@ contract TestBitBuckets is Test {
 
         assertEq(bitBuckets.getValueOf(accounts[0]), 1);
         assertEq(bitBuckets.getHead(0), accounts[0]);
-        // assertEq(bitBuckets.getMaxIndex(), 0);
-        assertEq(bitBuckets.maskOf(accounts[0]), firstMask);
+        assertEq(bitBuckets.getBucketsMask(), firstMask);
+        assertEq(bitBuckets.getMaskOf(accounts[0]), firstMask);
     }
 
     function testUpdatingFromZeroToZeroShouldNotInsert() public {
@@ -46,8 +46,8 @@ contract TestBitBuckets is Test {
 
         assertEq(bitBuckets.getValueOf(accounts[0]), 0);
         assertEq(bitBuckets.getHead(0), address(0));
-        // assertEq(bitBuckets.getMaxIndex(), 0);
-        assertEq(bitBuckets.maskOf(accounts[0]), 0);
+        assertEq(bitBuckets.getBucketsMask(), 0);
+        assertEq(bitBuckets.getMaskOf(accounts[0]), 0);
     }
 
     function testShouldInsertTwoAccounts() public {
@@ -56,7 +56,7 @@ contract TestBitBuckets is Test {
 
         assertEq(bitBuckets.getHead(2**8), accounts[0], "fetch big account");
         assertEq(bitBuckets.getHead(2**4), accounts[1], "fetch small account");
-        // assertEq(bitBuckets.getMaxIndex(), 2);
+        assertEq(bitBuckets.getBucketsMask(), (firstMask << 16) | (firstMask << 8));
     }
 
     function testShouldRemoveOneAccountOverTwo() public {
@@ -67,7 +67,6 @@ contract TestBitBuckets is Test {
         assertEq(bitBuckets.getHead(4), accounts[1]);
         assertEq(bitBuckets.getValueOf(accounts[0]), 0);
         assertEq(bitBuckets.getValueOf(accounts[1]), 16);
-        // assertEq(bitBuckets.getMaxIndex(), 2);
     }
 
     function testShouldRemoveBothAccounts() public {
@@ -79,22 +78,28 @@ contract TestBitBuckets is Test {
         assertEq(bitBuckets.getHead(4), address(0));
     }
 
-    // function testGetMaxIndex() public {
-    //     bitBuckets.update(accounts[0], 1);
-    //     assertEq(bitBuckets.getMaxIndex(), 0);
-    //     bitBuckets.update(accounts[1], 2);
-    //     assertEq(bitBuckets.getMaxIndex(), 0);
-    //     bitBuckets.update(accounts[2], 4);
-    //     assertEq(bitBuckets.getMaxIndex(), 1);
-    //     bitBuckets.update(accounts[3], 1000);
-    //     assertEq(bitBuckets.getMaxIndex(), 2);
-    //     bitBuckets.update(accounts[3], 0);
-    //     assertEq(bitBuckets.getMaxIndex(), 1);
-    //     bitBuckets.update(accounts[2], 0);
-    //     assertEq(bitBuckets.getMaxIndex(), 0);
-    //     bitBuckets.update(accounts[1], 0);
-    //     assertEq(bitBuckets.getMaxIndex(), 0);
-    // }
+    function testBucketsMask() public {
+        bitBuckets.update(accounts[0], 2**0);
+        bytes32 firstExpectedMask = firstMask;
+        assertEq(bitBuckets.getBucketsMask(), firstExpectedMask);
+
+        bitBuckets.update(accounts[1], 2**8);
+        bytes32 secondExpectedMask = firstExpectedMask | (firstMask << 8);
+        assertEq(bitBuckets.getBucketsMask(), secondExpectedMask);
+
+        bitBuckets.update(accounts[2], 2**16);
+        bytes32 thirdExpectedMask = secondExpectedMask | (firstMask << 16);
+        assertEq(bitBuckets.getBucketsMask(), thirdExpectedMask);
+
+        bitBuckets.update(accounts[2], 0);
+        assertEq(bitBuckets.getBucketsMask(), secondExpectedMask);
+
+        bitBuckets.update(accounts[1], 0);
+        assertEq(bitBuckets.getBucketsMask(), firstExpectedMask);
+
+        bitBuckets.update(accounts[0], 0);
+        assertEq(bitBuckets.getBucketsMask(), 0);
+    }
 
     function testGetHead() public {
         assertEq(bitBuckets.getHead(0), address(0));

@@ -21,11 +21,11 @@ contract ConcreteBitBuckets {
         return bitBuckets.getHead(_value);
     }
 
-    function maskOf(address _id) public view returns (bytes32) {
+    function getMaskOf(address _id) public view returns (bytes32) {
         return bitBuckets.maskOf[_id];
     }
 
-    function bucketsMask() public view returns (bytes32) {
+    function getBucketsMask() public view returns (bytes32) {
         return bitBuckets.bucketsMask;
     }
 }
