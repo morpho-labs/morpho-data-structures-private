@@ -45,7 +45,10 @@ contract TestBitBuckets is TestRandomBuckets {
         assertEq(bitBuckets.getValueOf(accounts[0]), 0);
         assertEq(bitBuckets.getHead(0), address(0));
         assertEq(bitBuckets.getBucketsMask(), 0);
-        assertEq(bitBuckets.getMaskOf(accounts[0]), 0);
+        assertEq(
+            bitBuckets.getMaskOf(accounts[0]),
+            0x00000000000000000000000000000000000000000000000000000000000000ff
+        );
     }
 
     function testShouldInsertTwoAccounts() public {

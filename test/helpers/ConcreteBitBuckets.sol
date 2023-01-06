@@ -5,6 +5,7 @@ import "src/BucketLib.sol";
 import "src/BitBucketsLib.sol";
 
 contract ConcreteBitBuckets {
+    using BitTwiddling for uint256;
     using BucketLib for BucketLib.Bucket;
     using BitBucketsLib for BitBucketsLib.BitBuckets;
 
@@ -23,7 +24,8 @@ contract ConcreteBitBuckets {
     }
 
     function getMaskOf(address _id) public view returns (bytes32) {
-        return bitBuckets.maskOf[_id];
+        (, bytes32 mask) = bitBuckets.balanceOf[_id].computeMask();
+        return mask;
     }
 
     function getBucketsMask() public view returns (bytes32) {
@@ -39,7 +41,7 @@ contract ConcreteBitBuckets {
             bytes32 mask = BitTwiddling.FIRST_MASK << (8 * i);
             BucketLib.Bucket storage bucket = bitBuckets.buckets[mask];
             for (uint256 j; j < bucket.getLength(); j++) {
-                uint256 value = bucket.accounts[j].value;
+                uint256 value = bitBuckets.balanceOf[bucket.accounts[j].id];
                 if (value < lowerValue || value > higherValue) return false;
             }
         }

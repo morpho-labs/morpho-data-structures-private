@@ -17,7 +17,7 @@ library BitBucketsLib {
     // Buckets are indexed by bit masks for efficiency. Valid bit masks 'byte addressed', meaning that valid masks are of the form '0xff << n' where n is a multiple of 8.
     struct BitBuckets {
         mapping(bytes32 => BucketLib.Bucket) buckets; // All the buckets indexed by their corresponding mask.
-        mapping(address => bytes32) maskOf; // The mask of a given account.
+        mapping(address => uint256) balanceOf; // The mask of a given account.
         bytes32 bucketsMask; // The disjunction of the masks of all the buckets used.
     }
 
@@ -39,18 +39,17 @@ library BitBucketsLib {
     ) internal {
         if (_id == address(0)) revert AddressIsZero();
 
-        bytes32 formerMask = _bitBuckets.maskOf[_id];
-        BucketLib.Bucket storage formerBucket = _bitBuckets.buckets[formerMask];
-        uint96 formerValue = formerBucket.getValueOf(_id);
+        (, bytes32 formerMask) = _bitBuckets.balanceOf[_id].computeMask();
+        uint256 formerValue = _bitBuckets.balanceOf[_id];
         uint96 newValue = SafeCast.toUint96(_newValue);
 
         if (formerValue == newValue) return;
 
-        if (newValue == 0) _remove(_bitBuckets, formerMask, _id);
+        if (_newValue == 0) _remove(_bitBuckets, formerMask, _id);
         else {
             (, bytes32 newMask) = _newValue.computeMask();
             if (formerValue == 0) _insert(_bitBuckets, newMask, _id, newValue);
-            else if (newMask == formerMask) formerBucket.changeValue(_id, newValue);
+            else if (newMask == formerMask) _bitBuckets.balanceOf[_id] = _newValue;
             else {
                 _remove(_bitBuckets, formerMask, _id);
                 _insert(_bitBuckets, newMask, _id, newValue);
@@ -67,8 +66,7 @@ library BitBucketsLib {
         view
         returns (uint256)
     {
-        bytes32 formerMask = _bitBuckets.maskOf[_id];
-        return _bitBuckets.buckets[formerMask].getValueOf(_id);
+        return _bitBuckets.balanceOf[_id];
     }
 
     /// @notice Returns an address with value matching the input value.
@@ -106,7 +104,7 @@ library BitBucketsLib {
     ) private {
         BucketLib.Bucket storage formerBucket = _bitBuckets.buckets[_formerMask];
         formerBucket.remove(_id);
-        delete _bitBuckets.maskOf[_id];
+        delete _bitBuckets.balanceOf[_id];
         if (formerBucket.getLength() == 0) _bitBuckets.bucketsMask &= ~_formerMask;
     }
 
@@ -123,8 +121,8 @@ library BitBucketsLib {
         uint96 _newValue
     ) private {
         BucketLib.Bucket storage newBucket = _bitBuckets.buckets[_newMask];
-        newBucket.insert(_id, _newValue);
-        _bitBuckets.maskOf[_id] = _newMask;
+        newBucket.insert(_id);
+        _bitBuckets.balanceOf[_id] = _newValue;
         _bitBuckets.bucketsMask |= _newMask;
     }
 }
