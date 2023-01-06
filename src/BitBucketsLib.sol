@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GNU AGPLv3
 pragma solidity ^0.8.0;
 
-import "@openzeppelin/contracts/utils/math/SafeCast.sol";
+import "../lib/openzeppelin-contracts/contracts/utils/math/SafeCast.sol";
 import "./libraries/BitTwiddling.sol";
 import "./BucketLib.sol";
 
