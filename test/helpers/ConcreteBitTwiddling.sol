@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GNU AGPLv3
 pragma solidity ^0.8.0;
 
-import "src/libraries/BitTwiddling.sol";
+import "src/BitTwiddling.sol";
 
 contract ConcreteBitTwiddling {
     function firstMask() public pure returns (bytes32) {
