@@ -2,6 +2,9 @@
 pragma solidity ^0.8.0;
 
 library DoubleLinkedList {
+
+    /// WARNING: This library assumes the input to be clean from address(0) and 0 values.
+
     /// STRUCTS ///
 
     struct Account {
@@ -12,11 +15,6 @@ library DoubleLinkedList {
     struct List {
         mapping(address => Account) accounts;
     }
-
-    /// ERRORS ///
-
-    /// @notice Thrown when the address is zero at insertion.
-    error AddressIsZero();
 
     /// INTERNAL ///
 
@@ -40,6 +38,7 @@ library DoubleLinkedList {
     /// @param _id The address of the account.
     function remove(List storage _list, address _id) internal returns (bool empty) {
         Account memory account = _list.accounts[_id];
+
         address prev = account.prev;
         address next = account.next;
 
@@ -55,8 +54,6 @@ library DoubleLinkedList {
     /// @param _list The list to search in.
     /// @param _id The address of the account.
     function insert(List storage _list, address _id) internal returns (bool empty) {
-        if (_id == address(0)) revert AddressIsZero();
-
         address tail = _list.accounts[address(0)].prev;
         empty = tail == address(0);
 
