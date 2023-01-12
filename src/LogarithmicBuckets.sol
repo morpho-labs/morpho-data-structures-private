@@ -8,7 +8,7 @@ library LogarithmicBuckets {
 
     struct BucketList {
         mapping(uint256 => BucketDLL.List) lists;
-        mapping(address => uint256) valueOf;
+        mapping(bytes32 => uint256) valueOf;
         uint256 bucketsMask;
     }
 
@@ -25,10 +25,10 @@ library LogarithmicBuckets {
     /// @notice Updates an account in the `_buckets`.
     function update(
         BucketList storage _buckets,
-        address _id,
+        bytes32 _id,
         uint256 _newValue
     ) internal {
-        if (_id == address(0)) revert AddressIsZero();
+        if (_id == 0) revert AddressIsZero();
         uint256 value = _buckets.valueOf[_id];
         _buckets.valueOf[_id] = _newValue;
 
@@ -60,7 +60,7 @@ library LogarithmicBuckets {
     /// @param _bucket The mask of the bucket where to remove.
     function _remove(
         BucketList storage _buckets,
-        address _id,
+        bytes32 _id,
         uint256 _bucket
     ) private {
         if (_buckets.lists[_bucket].remove(_id))
@@ -75,7 +75,7 @@ library LogarithmicBuckets {
     /// @param _bucket The mask of the bucket where to insert.
     function _insert(
         BucketList storage _buckets,
-        address _id,
+        bytes32 _id,
         uint256 _bucket
     ) private {
         if (_buckets.lists[_bucket].insert(_id)) _buckets.bucketsMask |= _bucket;
@@ -125,7 +125,7 @@ library LogarithmicBuckets {
     /// @notice Returns the address at the head or at the tail of the double linked list.
     /// @param _list The list from which to get the first address.
     /// @param _getHead True to return the head, false to return the tail.
-    function _getFirst(BucketDLL.List storage _list, bool _getHead) private view returns (address) {
+    function _getFirst(BucketDLL.List storage _list, bool _getHead) private view returns (bytes32) {
         if (_getHead) return _list.getHead();
         return _list.getTail();
     }
@@ -135,7 +135,7 @@ library LogarithmicBuckets {
     /// @notice Returns the value of `_id`.
     /// @param _buckets The buckets to search in.
     /// @param _id The address of the account.
-    function getValueOf(BucketList storage _buckets, address _id) internal view returns (uint256) {
+    function getValueOf(BucketList storage _buckets, bytes32 _id) internal view returns (uint256) {
         return _buckets.valueOf[_id];
     }
 
@@ -160,9 +160,9 @@ library LogarithmicBuckets {
         BucketList storage _buckets,
         uint256 _value,
         bool _fifo
-    ) internal view returns (address) {
+    ) internal view returns (bytes32) {
         uint256 bucketsMask = _buckets.bucketsMask;
-        if (bucketsMask == 0) return address(0);
+        if (bucketsMask == 0) return 0;
         uint256 lowerMask = _setLowerBits(_value);
 
         uint256 next = _nextBucket(lowerMask, bucketsMask);

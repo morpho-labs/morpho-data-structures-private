@@ -9,11 +9,11 @@ contract LogarithmicBucketsMock {
 
     LogarithmicBuckets.BucketList public bucketList;
 
-    function update(address _id, uint256 _newValue) public virtual {
+    function update(bytes32 _id, uint256 _newValue) public virtual {
         bucketList.update(_id, _newValue);
     }
 
-    function getValueOf(address _id) public view returns (uint256) {
+    function getValueOf(bytes32 _id) public view returns (uint256) {
         return bucketList.getValueOf(_id);
     }
 
@@ -35,7 +35,7 @@ contract LogarithmicBucketsMock {
         return lowerMask ^ (lowerMask >> 1);
     }
 
-    function getMatch(uint256 _value, bool _fifo) public view returns (address) {
+    function getMatch(uint256 _value, bool _fifo) public view returns (bytes32) {
         return bucketList.getMatch(_value, _fifo);
     }
 
@@ -49,7 +49,7 @@ contract LogarithmicBucketsMock {
 
             BucketDLL.List storage list = bucketList.getBucketOf(lowerValue);
 
-            for (address id = list.getHead(); id != address(0); id = list.getNext(id)) {
+            for (bytes32 id = list.getHead(); id != 0; id = list.getNext(id)) {
                 uint256 value = bucketList.getValueOf(id);
                 if (value < lowerValue || value > higherValue) return false;
             }

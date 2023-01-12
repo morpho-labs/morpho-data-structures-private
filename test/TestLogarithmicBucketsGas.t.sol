@@ -32,17 +32,18 @@ contract TestLogarithmicBucketsGas is Test {
             // Insert into DS (p=1/2).
             if (amount % 4 < 2) {
                 // Measure insert.
+                bytes32 account = bytes32(uint256(amount));
                 startGasMetering();
-                bucketList.update(address(uint160(amount)), amount);
+                bucketList.update(account, amount);
                 insertCost += stopGasMetering();
                 insertCount++;
             }
             // Update value in same bucket (p=1/4).
             else if (amount % 4 == 2) {
                 // Get an account to update its value.
-                address toUpdate = bucketList.getMatch(amount, true);
+                bytes32 toUpdate = bucketList.getMatch(amount, true);
 
-                if (toUpdate != address(0)) {
+                if (toUpdate != 0) {
                     // Measure updateValue.
                     startGasMetering();
                     bucketList.update(toUpdate, amount);
@@ -54,11 +55,11 @@ contract TestLogarithmicBucketsGas is Test {
             else {
                 // Measure getMatch.
                 startGasMetering();
-                address toUpdate = bucketList.getMatch(amount, true);
+                bytes32 toUpdate = bucketList.getMatch(amount, true);
                 getMatchCost += stopGasMetering();
                 getMatchCount++;
 
-                if (toUpdate != address(0)) {
+                if (toUpdate != 0) {
                     // Measure remove.
                     startGasMetering();
                     bucketList.update(bucketList.getMatch(amount, true), 0);
