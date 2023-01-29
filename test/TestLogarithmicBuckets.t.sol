@@ -116,6 +116,41 @@ contract TestLogarithmicBuckets is LogarithmicBucketsMock, Test {
         assertEq(bucketList.getMatch(32), accounts[0], "head above");
     }
 
+    function testGetNextEmptyBuckets(uint8 _bucketLog, address _id) public {
+        assertEq(bucketList.getNext(1 << _bucketLog, _id), address(0));
+    }
+
+    function testGetNextEmptyBucket(
+        uint8 _bucketLog1,
+        uint8 _bucketLog2,
+        address _id
+    ) public {
+        vm.assume(_bucketLog1 != _bucketLog2);
+        vm.assume(_id != address(0));
+
+        bucketList.update(_id, 1 << _bucketLog1, true);
+        assertEq(bucketList.getNext(1 << _bucketLog2, address(0)), address(0));
+    }
+
+    function testGetNext(
+        uint8 _bucketLog,
+        address _id1,
+        address _id2
+    ) public {
+        vm.assume(_id1 != address(0));
+        vm.assume(_id2 != address(0));
+        vm.assume(_id1 != _id2);
+
+        console.log(_id1);
+        console.log(_id2);
+
+        bucketList.update(_id1, 1 << _bucketLog, false);
+        bucketList.update(_id2, 1 << _bucketLog, false);
+        assertEq(bucketList.getNext(1 << _bucketLog, address(0)), _id1);
+        assertEq(bucketList.getNext(1 << _bucketLog, _id1), _id2);
+        assertEq(bucketList.getNext(1 << _bucketLog, _id2), address(0));
+    }
+
     function isPowerOfTwo(uint256 x) public pure returns (bool) {
         unchecked {
             return x != 0 && (x & (x - 1)) == 0;

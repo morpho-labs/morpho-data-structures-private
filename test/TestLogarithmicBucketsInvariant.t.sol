@@ -54,12 +54,12 @@ contract LogarithmicBucketsSeenMock is LogarithmicBucketsMock {
         super.update(_id, _newValue, _head);
     }
 
-    function getPrev(uint256 _value, address _id) public view returns (address) {
+    function getPrevDLL(uint256 _value, address _id) public view returns (address) {
         BucketDLL.List storage bucket = bucketList.getBucketOf(_value);
         return bucket.getPrev(_id);
     }
 
-    function getNext(uint256 _value, address _id) public view returns (address) {
+    function getNextDLL(uint256 _value, address _id) public view returns (address) {
         BucketDLL.List storage bucket = bucketList.getBucketOf(_value);
         return bucket.getNext(_id);
     }
@@ -77,11 +77,31 @@ contract TestLogarithmicBucketsSeenInvariant is Test, Random {
             address user = buckets.seen(i);
             uint256 value = buckets.getValueOf(user);
             if (value != 0) {
-                address next = buckets.getNext(value, user);
-                address prev = buckets.getPrev(value, user);
-                assertEq(buckets.getNext(value, prev), user);
-                assertEq(buckets.getPrev(value, next), user);
+                address next = buckets.getNextDLL(value, user);
+                address prev = buckets.getPrevDLL(value, user);
+                assertEq(buckets.getNextDLL(value, prev), user);
+                assertEq(buckets.getPrevDLL(value, next), user);
             }
+        }
+    }
+
+    function invariantGetNext1() public {
+        for (uint256 i; i < 256; i++) {
+            uint256 bucket = 1 << i;
+            address id = buckets.getNextDLL(bucket, address(0));
+            do {
+                assertEq(buckets.getNextDLL(bucket, id), buckets.getNext(bucket, id));
+                id = buckets.getNextDLL(bucket, id);
+            } while (id != address(0));
+        }
+    }
+
+    function invariantGetNext2() public {
+        for (uint256 i; i < buckets.seenLength(); i++) {
+            address user = buckets.seen(i);
+            uint256 value = buckets.getValueOf(user);
+            uint256 bucket = buckets.computeBucket(value);
+            assertEq(buckets.getNext(bucket, user), buckets.getNextDLL(value, user));
         }
     }
 }

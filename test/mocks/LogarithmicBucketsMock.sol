@@ -30,6 +30,10 @@ contract LogarithmicBucketsMock {
         return bucketList.getMatch(_value);
     }
 
+    function getNext(uint256 _bucket, address _id) public view returns (address) {
+        return bucketList.getNext(_bucket, _id);
+    }
+
     function verifyStructure() public view returns (bool) {
         for (uint256 i; i < 256; i++) {
             uint256 lowerValue = 2**i;
@@ -46,6 +50,10 @@ contract LogarithmicBucketsMock {
             }
         }
         return true;
+    }
+
+    function computeBucket(uint256 _value) public pure returns (uint256) {
+        return LogarithmicBuckets.computeBucket(_value);
     }
 
     function nextBucket(uint256 _value) internal view returns (uint256) {

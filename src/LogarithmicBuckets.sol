@@ -93,6 +93,19 @@ library LogarithmicBuckets {
         return _buckets.lists[prev].getHead();
     }
 
+    /// @notice Returns the address in `_buckets` that is after the address `_id` in the bucket `_bucket`.
+    /// @param _buckets The buckets to search in.
+    /// @param _bucket The bucket of the current account (will return address zero if the account is not in this bucket).
+    /// @param _id The address of the current account.
+    /// @return The address of the head.
+    function getNext(
+        BucketList storage _buckets,
+        uint256 _bucket,
+        address _id
+    ) internal view returns (address) {
+        return _buckets.lists[_bucket].getNext(_id);
+    }
+
     /// PRIVATE ///
 
     /// @notice Removes an account in the `_buckets`.
