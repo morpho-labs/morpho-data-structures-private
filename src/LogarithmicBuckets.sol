@@ -39,20 +39,20 @@ library LogarithmicBuckets {
 
         if (value == 0) {
             if (_newValue == 0) revert ZeroValue();
-            _insert(_buckets, _id, computeBucket(_newValue), _head);
+            insert(_buckets, _id, computeBucket(_newValue), _head);
             return;
         }
 
         uint256 currentBucket = computeBucket(value);
         if (_newValue == 0) {
-            _remove(_buckets, _id, currentBucket);
+            remove(_buckets, _id, currentBucket);
             return;
         }
 
         uint256 newBucket = computeBucket(_newValue);
         if (newBucket != currentBucket) {
-            _remove(_buckets, _id, currentBucket);
-            _insert(_buckets, _id, newBucket, _head);
+            remove(_buckets, _id, currentBucket);
+            insert(_buckets, _id, newBucket, _head);
         }
     }
 
@@ -116,18 +116,16 @@ library LogarithmicBuckets {
         return _buckets.lists[strictPrevBucket].getHead();
     }
 
-    /// PRIVATE ///
-
     /// @notice Removes an account in the `_buckets`.
     /// @dev Does not update the value.
     /// @param _buckets The buckets to modify.
     /// @param _id The address of the account to remove.
     /// @param _bucket The mask of the bucket where to remove.
-    function _remove(
+    function remove(
         BucketList storage _buckets,
         address _id,
         uint256 _bucket
-    ) private {
+    ) internal {
         if (_buckets.lists[_bucket].remove(_id))
             _buckets.bucketsMask &= _bucket ^ type(uint256).max;
     }
@@ -139,12 +137,12 @@ library LogarithmicBuckets {
     /// @param _id The address of the account to update.
     /// @param _bucket The mask of the bucket where to insert.
     /// @param _head Whether to insert at the head or at the tail of the list.
-    function _insert(
+    function insert(
         BucketList storage _buckets,
         address _id,
         uint256 _bucket,
         bool _head
-    ) private {
+    ) internal {
         if (_buckets.lists[_bucket].insert(_id, _head)) _buckets.bucketsMask |= _bucket;
     }
 
