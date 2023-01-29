@@ -39,20 +39,20 @@ library LogarithmicBuckets {
 
         if (value == 0) {
             if (_newValue == 0) revert ZeroValue();
-            insert(_buckets, _id, computeBucket(_newValue), _head);
+            _insert(_buckets, _id, computeBucket(_newValue), _head);
             return;
         }
 
         uint256 currentBucket = computeBucket(value);
         if (_newValue == 0) {
-            remove(_buckets, _id, currentBucket);
+            _remove(_buckets, _id, currentBucket);
             return;
         }
 
         uint256 newBucket = computeBucket(_newValue);
         if (newBucket != currentBucket) {
-            remove(_buckets, _id, currentBucket);
-            insert(_buckets, _id, newBucket, _head);
+            _remove(_buckets, _id, currentBucket);
+            _insert(_buckets, _id, newBucket, _head);
         }
     }
 
@@ -116,36 +116,6 @@ library LogarithmicBuckets {
         return _buckets.lists[strictPrevBucket].getHead();
     }
 
-    /// @notice Removes an account in the `_buckets`.
-    /// @dev Does not update the value.
-    /// @param _buckets The buckets to modify.
-    /// @param _id The address of the account to remove.
-    /// @param _bucket The mask of the bucket where to remove.
-    function remove(
-        BucketList storage _buckets,
-        address _id,
-        uint256 _bucket
-    ) internal {
-        if (_buckets.lists[_bucket].remove(_id))
-            _buckets.bucketsMask &= _bucket ^ type(uint256).max;
-    }
-
-    /// @notice Inserts an account in the `_buckets`.
-    /// @dev Expects that `_id` != 0.
-    /// @dev Does not update the value.
-    /// @param _buckets The buckets to modify.
-    /// @param _id The address of the account to update.
-    /// @param _bucket The mask of the bucket where to insert.
-    /// @param _head Whether to insert at the head or at the tail of the list.
-    function insert(
-        BucketList storage _buckets,
-        address _id,
-        uint256 _bucket,
-        bool _head
-    ) internal {
-        if (_buckets.lists[_bucket].insert(_id, _head)) _buckets.bucketsMask |= _bucket;
-    }
-
     /// @notice Returns the bucket in which the given value would fall.
     function computeBucket(uint256 _value) internal pure returns (uint256) {
         uint256 lowerMask = setLowerBits(_value);
@@ -185,5 +155,37 @@ library LogarithmicBuckets {
     function prevBucket(uint256 lowerMask, uint256 bucketsMask) internal pure returns (uint256) {
         uint256 lowerBucketsMask = setLowerBits(lowerMask & bucketsMask);
         return lowerBucketsMask ^ (lowerBucketsMask >> 1);
+    }
+
+    /// PRIVATE
+
+    /// @notice Removes an account in the `_buckets`.
+    /// @dev Does not update the value.
+    /// @param _buckets The buckets to modify.
+    /// @param _id The address of the account to remove.
+    /// @param _bucket The mask of the bucket where to remove.
+    function _remove(
+        BucketList storage _buckets,
+        address _id,
+        uint256 _bucket
+    ) private {
+        if (_buckets.lists[_bucket].remove(_id))
+            _buckets.bucketsMask &= _bucket ^ type(uint256).max;
+    }
+
+    /// @notice Inserts an account in the `_buckets`.
+    /// @dev Expects that `_id` != 0.
+    /// @dev Does not update the value.
+    /// @param _buckets The buckets to modify.
+    /// @param _id The address of the account to update.
+    /// @param _bucket The mask of the bucket where to insert.
+    /// @param _head Whether to insert at the head or at the tail of the list.
+    function _insert(
+        BucketList storage _buckets,
+        address _id,
+        uint256 _bucket,
+        bool _head
+    ) private {
+        if (_buckets.lists[_bucket].insert(_id, _head)) _buckets.bucketsMask |= _bucket;
     }
 }
