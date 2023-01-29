@@ -30,6 +30,10 @@ contract LogarithmicBucketsMock {
         return bucketList.getMatch(_value);
     }
 
+    function getNextAccountFromTop(address _id) public view returns (address) {
+        return bucketList.getNextAccountFromTop(_id);
+    }
+
     function verifyStructure() public view returns (bool) {
         for (uint256 i; i < 256; i++) {
             uint256 lowerValue = 2**i;
@@ -48,13 +52,13 @@ contract LogarithmicBucketsMock {
         return true;
     }
 
-    function nextBucket(uint256 _value) internal view returns (uint256) {
+    function nextBucket(uint256 _value) public view returns (uint256) {
         uint256 bucketsMask = bucketList.bucketsMask;
         uint256 lowerMask = LogarithmicBuckets.setLowerBits(_value);
         return LogarithmicBuckets.nextBucket(lowerMask, bucketsMask);
     }
 
-    function prevBucket(uint256 _value) internal view returns (uint256) {
+    function prevBucket(uint256 _value) public view returns (uint256) {
         uint256 bucketsMask = bucketList.bucketsMask;
         uint256 lowerMask = LogarithmicBuckets.setLowerBits(_value);
         return LogarithmicBuckets.prevBucket(lowerMask, bucketsMask);

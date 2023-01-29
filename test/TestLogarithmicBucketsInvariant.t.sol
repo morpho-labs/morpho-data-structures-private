@@ -84,4 +84,37 @@ contract TestLogarithmicBucketsSeenInvariant is Test, Random {
             }
         }
     }
+
+    function invariantGetTop() public {
+        assertEq(buckets.getNextAccountFromTop(address(0)), buckets.getMatch(type(uint256).max));
+    }
+
+    function invariantGetNextInSameBucket() public {
+        for (uint256 i; i < buckets.seenLength(); i++) {
+            address user = buckets.seen(i);
+            uint256 value = buckets.getValueOf(user);
+            if (buckets.getNext(value, user) != address(0))
+                assertEq(buckets.getNextAccountFromTop(user), buckets.getNext(value, user));
+        }
+    }
+
+    function invariantGetNext() public {
+        address id = buckets.getNextAccountFromTop(address(0));
+        while (id != address(0)) {
+            if (buckets.getNext(buckets.getValueOf(id), id) != address(0)) {
+                assertEq(
+                    buckets.getNextAccountFromTop(id),
+                    buckets.getNext(buckets.getValueOf(id), id)
+                );
+            } else {
+                // The account is the last of its bucket.
+                uint256 strictlyPrevBucket = buckets.prevBucket(buckets.getValueOf(id) / 2);
+                assertEq(
+                    buckets.getNextAccountFromTop(id),
+                    buckets.getNext(strictlyPrevBucket, address(0))
+                );
+            }
+            id = buckets.getNextAccountFromTop(id);
+        }
+    }
 }
