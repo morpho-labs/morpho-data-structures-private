@@ -93,6 +93,29 @@ library LogarithmicBuckets {
         return _buckets.lists[prev].getHead();
     }
 
+    /// @notice Returns the address in `_buckets` that comes after `_id`, starting from the top bucket.
+    /// @param _buckets The buckets to get the next account from.
+    /// @param _id The address of the account.
+    /// @return The address of the next account.
+    function getAccountFromTop(BucketList storage _buckets, address _id)
+        internal
+        view
+        returns (address)
+    {
+        uint256 bucketsMask = _buckets.bucketsMask;
+        if (bucketsMask == 0) return address(0);
+
+        uint256 value = _buckets.valueOf[_id];
+        uint256 lowerMask = value == 0 ? type(uint256).max : _setLowerBits(value);
+        uint256 prevBucket = _prevBucket(lowerMask, bucketsMask);
+        address nextInBucket = _buckets.lists[prevBucket].getNext(_id);
+        if (nextInBucket != address(0)) return nextInBucket;
+
+        uint256 strictLowerMask = lowerMask >> 1;
+        uint256 strictPrevBucket = _prevBucket(strictLowerMask, bucketsMask);
+        return _buckets.lists[strictPrevBucket].getHead();
+    }
+
     /// PRIVATE ///
 
     /// @notice Removes an account in the `_buckets`.

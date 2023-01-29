@@ -115,4 +115,28 @@ contract TestLogarithmicBuckets is LogarithmicBucketsMock, Test {
         assertEq(bucketList.getMatch(16), accounts[0], "head equal");
         assertEq(bucketList.getMatch(32), accounts[0], "head above");
     }
+
+    function testGetAccountFromTop() public {
+        bucketList.update(accounts[0], 16, true);
+        bucketList.update(accounts[1], 8, true);
+        bucketList.update(accounts[2], 10, true);
+        bucketList.update(accounts[3], 5, true);
+
+        address currentAccount;
+
+        currentAccount = bucketList.getAccountFromTop(currentAccount);
+        assertEq(currentAccount, accounts[0]);
+
+        currentAccount = bucketList.getAccountFromTop(currentAccount);
+        assertEq(currentAccount, accounts[2]);
+
+        currentAccount = bucketList.getAccountFromTop(currentAccount);
+        assertEq(currentAccount, accounts[1]);
+
+        currentAccount = bucketList.getAccountFromTop(currentAccount);
+        assertEq(currentAccount, accounts[3]);
+
+        currentAccount = bucketList.getAccountFromTop(currentAccount);
+        assertEq(currentAccount, address(0));
+    }
 }
