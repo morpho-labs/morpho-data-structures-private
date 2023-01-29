@@ -124,19 +124,19 @@ contract TestLogarithmicBuckets is LogarithmicBucketsMock, Test {
 
         address currentAccount;
 
-        currentAccount = bucketList.getAccountFromTop(currentAccount);
+        currentAccount = bucketList.getNextAccountFromTop(currentAccount);
         assertEq(currentAccount, accounts[0]);
 
-        currentAccount = bucketList.getAccountFromTop(currentAccount);
+        currentAccount = bucketList.getNextAccountFromTop(currentAccount);
         assertEq(currentAccount, accounts[2]);
 
-        currentAccount = bucketList.getAccountFromTop(currentAccount);
+        currentAccount = bucketList.getNextAccountFromTop(currentAccount);
         assertEq(currentAccount, accounts[1]);
 
-        currentAccount = bucketList.getAccountFromTop(currentAccount);
+        currentAccount = bucketList.getNextAccountFromTop(currentAccount);
         assertEq(currentAccount, accounts[3]);
 
-        currentAccount = bucketList.getAccountFromTop(currentAccount);
+        currentAccount = bucketList.getNextAccountFromTop(currentAccount);
         assertEq(currentAccount, address(0));
     }
 

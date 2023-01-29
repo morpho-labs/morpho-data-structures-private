@@ -97,7 +97,7 @@ library LogarithmicBuckets {
     /// @param _buckets The buckets to get the next account from.
     /// @param _id The address of the account.
     /// @return The address of the next account.
-    function getAccountFromTop(BucketList storage _buckets, address _id)
+    function getNextAccountFromTop(BucketList storage _buckets, address _id)
         internal
         view
         returns (address)
