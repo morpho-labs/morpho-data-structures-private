@@ -56,6 +56,12 @@ library LogarithmicBuckets {
         }
     }
 
+    /// @notice Returns the bucketsMask.
+    /// @param _buckets The buckets to search in.
+    function getBucketsMask(BucketList storage _buckets) internal view returns (uint256) {
+        return _buckets.bucketsMask;
+    }
+
     /// @notice Returns the value of `_id`.
     /// @param _buckets The buckets to search in.
     /// @param _id The address of the account.

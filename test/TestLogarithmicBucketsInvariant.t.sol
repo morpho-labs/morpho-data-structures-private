@@ -63,6 +63,10 @@ contract LogarithmicBucketsSeenMock is LogarithmicBucketsMock {
         BucketDLL.List storage bucket = bucketList.getBucketOf(_value);
         return bucket.getNext(_id);
     }
+
+    function checkGetBucketMask() public {
+        assertEq(bucketList.getBucketsMask(), bucketList.bucketsMask);
+    }
 }
 
 contract TestLogarithmicBucketsSeenInvariant is Test, Random {
@@ -116,5 +120,9 @@ contract TestLogarithmicBucketsSeenInvariant is Test, Random {
             }
             id = buckets.getNextAccountFromTop(id);
         }
+    }
+
+    function invariantGetBucketsMask() public {
+        checkGetBucketMask();
     }
 }
