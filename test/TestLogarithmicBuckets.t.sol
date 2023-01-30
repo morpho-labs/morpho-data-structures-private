@@ -141,9 +141,6 @@ contract TestLogarithmicBuckets is LogarithmicBucketsMock, Test {
         vm.assume(_id2 != address(0));
         vm.assume(_id1 != _id2);
 
-        console.log(_id1);
-        console.log(_id2);
-
         bucketList.update(_id1, 1 << _bucketLog, false);
         bucketList.update(_id2, 1 << _bucketLog, false);
         assertEq(bucketList.getNext(1 << _bucketLog, address(0)), _id1);

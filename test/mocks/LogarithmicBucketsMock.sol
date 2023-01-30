@@ -52,10 +52,6 @@ contract LogarithmicBucketsMock {
         return true;
     }
 
-    function computeBucket(uint256 _value) public pure returns (uint256) {
-        return LogarithmicBuckets.computeBucket(_value);
-    }
-
     function nextBucket(uint256 _value) internal view returns (uint256) {
         uint256 bucketsMask = bucketList.bucketsMask;
         uint256 lowerMask = LogarithmicBuckets.setLowerBits(_value);

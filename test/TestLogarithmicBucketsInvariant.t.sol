@@ -104,7 +104,7 @@ contract TestLogarithmicBucketsSeenInvariant is Test, Random {
         for (uint256 i; i < buckets.seenLength(); i++) {
             address user = buckets.seen(i);
             uint256 value = buckets.getValueOf(user);
-            uint256 bucket = buckets.computeBucket(value);
+            uint256 bucket = LogarithmicBuckets.computeBucket(value);
             assertEq(buckets.getNext(bucket, user), buckets.getNextDLL(value, user));
         }
     }
