@@ -4,6 +4,7 @@ pragma solidity ^0.8.0;
 import "./helpers/Random.sol";
 import "./mocks/LogarithmicBucketsMock.sol";
 import "forge-std/Test.sol";
+import "forge-std/Vm.sol";
 
 contract TestLogarithmicBucketsInvariant is Test, Random {
     LogarithmicBucketsMock public buckets;
@@ -26,6 +27,29 @@ contract TestLogarithmicBucketsInvariant is Test, Random {
     function invariantGetMatch() public {
         bool notEmpty = buckets.maxBucket() != 0;
         uint256 value = randomUint256();
+        address matched = buckets.getMatch(value);
+        if (!(!notEmpty || matched != address(0))) {
+            vm.writeLine(
+                "resultInvariant.txt",
+                string.concat("not empty: ", vm.toString(notEmpty))
+            );
+            vm.writeLine(
+                "resultInvariant.txt",
+                string.concat("matched address: ", vm.toString(matched))
+            );
+        }
+        assertTrue(!notEmpty || matched != address(0));
+    }
+
+    function testGetMatchConcrete() public {
+        address sender = 0x192d2e7697D1AEA0c88D4029f1456c7d43622bE9;
+        bool notEmpty = buckets.maxBucket() != 0;
+        uint256 value = 2723333909720145886270559787829311779245887701141161145730593;
+
+        // vm.writeLine("result.txt", "bidule");
+        console.log(vm.readFile("result.txt"));
+        vm.prank(sender);
+        buckets.update(0x75E489666278fC7fD821F161C9A34f20b3f710BB, value, true);
         assertTrue(!notEmpty || buckets.getMatch(value) != address(0));
     }
 }
